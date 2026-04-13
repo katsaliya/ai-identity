@@ -6,11 +6,16 @@ def extract_text(pdf_path):
         full_text += page.extract_text()
     return full_text
 
-def chunk_text(text, chunk_size= 500, overlap =50):
-    chunks = [ ]        #creating an empty list to store the chunks
+def chunk_text(text, chunk_size=500, overlap=50):
+    chunks = []
     start = 0
-    while start < len(text):        #keep to chunk until the end of the text is reached
-        end= start + chunk_size     #grab 500 characters starting from the current position
+    while start < len(text):
+        end = start + chunk_size
+        # Don't cut mid-word — extend to nearest space
+        if end < len(text) and text[end] != " ":
+            end = text.rfind(" ", start, end + 1)
+            if end == -1:  # no space found, just cut at chunk_size
+                end = start + chunk_size
         chunk = text[start:end]
         chunks.append(chunk)
         start = end - overlap
