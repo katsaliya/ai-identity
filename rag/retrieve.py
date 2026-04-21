@@ -23,7 +23,7 @@ def retrieve_context(user_question, n_results=3):
 
 # Test it
 if __name__ == "__main__":
-    question = "how do I apply for work authorization?"
+    question = "how do I apply for a green card?"
     context = retrieve_context(question)
     print("Retrieved context:")
     print(context)
