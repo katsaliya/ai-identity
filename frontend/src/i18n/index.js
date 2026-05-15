@@ -9,7 +9,7 @@ export const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "es", label: "Español" },
   { code: "zh", label: "中文" },
-  { code: "tl", label: "Filipino" },
+  { code: "tl", label: "Tagalog" },
   { code: "hi", label: "हिन्दी" },
   { code: "ar", label: "العربية" },
 ];

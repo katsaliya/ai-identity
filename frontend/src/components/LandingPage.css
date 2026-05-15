@@ -4,8 +4,8 @@
   inset: 0;
   z-index: 10;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 /* ── Mini header ─────────────────────────────────────────────────── */
@@ -15,7 +15,7 @@
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 12px 80px;
   background: rgba(27, 11, 46, 0.42);
   backdrop-filter: blur(16px);
@@ -59,16 +59,63 @@
   color: #fff7df;
 }
 
-/* ── Two-column grid ─────────────────────────────────────────────── */
+/* Auth buttons in header */
+.header-auth {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.auth-pill {
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+}
+
+.auth-pill--login {
+  background: transparent;
+  border: 1px solid rgba(244, 220, 255, 0.3);
+  color: rgba(244, 220, 255, 0.78);
+}
+
+.auth-pill--login:hover {
+  background: rgba(244, 220, 255, 0.08);
+  border-color: rgba(244, 220, 255, 0.5);
+  color: #fff7df;
+}
+
+.auth-pill--signup {
+  background: rgba(190, 131, 0, 0.22);
+  border: 1px solid rgba(190, 131, 0, 0.55);
+  color: #f0b429;
+}
+
+.auth-pill--signup:hover {
+  background: rgba(190, 131, 0, 0.36);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(190, 131, 0, 0.22);
+}
+
+/* ── Language-switch fade transition ─────────────────────────────── */
 .landing-inner {
-  flex: 1;
   display: grid;
   grid-template-columns: 58fr 42fr;
+  grid-template-rows: 1fr;
+  align-items: center;
   gap: 56px;
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   padding: 52px 80px 48px;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.landing-inner.lang-fading {
+  opacity: 0;
+  transform: translateY(5px);
 }
 
 /* ── Left column ─────────────────────────────────────────────────── */
@@ -128,7 +175,6 @@
   opacity: 0;
 }
 
-/* Animation only runs once the subtitle is activated (after logo appears) */
 .landing-tagline--shown {
   animation: tagline-pop 0.3s ease both;
 }
@@ -143,12 +189,12 @@
   color: #f0b429;
 }
 
-/* ── Landing input bar (replaces "Start chatting" button) ────────── */
+/* ── Landing input bar ───────────────────────────────────────────── */
 .landing-input-wrap {
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   max-width: 580px;
   opacity: 0;
 }
@@ -229,46 +275,12 @@
   transform: none;
 }
 
-/* Secondary CTA row */
-.landing-secondary-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 36px;
-  opacity: 0;
-}
-
-.cta-secondary {
-  padding: 13px 26px;
-  border-radius: 8px;
-  background: rgba(190, 131, 0, 0.18);
-  border: 1px solid rgba(190, 131, 0, 0.45);
-  color: #f0b429;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-.cta-secondary:hover {
-  background: rgba(190, 131, 0, 0.32);
-  transform: translateY(-1px);
-}
-
-.cta-note {
-  font-size: 0.78rem;
-  color: rgba(244, 220, 255, 0.38);
-  margin: 0;
-}
-
 /* Forms section */
 .forms-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  opacity: 0;
+  margin-top: 8px;
 }
 
 .forms-label {
@@ -307,7 +319,6 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  padding-top: 56px;
   opacity: 0;
 }
 
@@ -369,7 +380,7 @@
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 22px 80px 36px;
+  padding: 22px 80px 20px;
   border-top: 1px solid rgba(244, 220, 255, 0.1);
   opacity: 0;
 }
@@ -378,7 +389,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .footer-bullet {
@@ -408,13 +419,14 @@
 .landing-disclaimer {
   font-size: 0.72rem;
   color: rgba(244, 220, 255, 0.28);
-  margin: 0;
+  margin: 0 auto;
   line-height: 1.55;
-  max-width: 900px;
+  text-align: center;
+  max-width: 720px;
+  padding-bottom: 4px;
 }
 
 /* ── Staggered flood-in animation ───────────────────────────────── */
-/* Applied to every element that fades in when contentIn = true     */
 @keyframes el-fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -428,7 +440,8 @@
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 860px) {
   .landing-header {
-    padding: 12px 20px;
+    padding: 10px 16px;
+    gap: 8px;
   }
 
   .landing-inner {
@@ -437,12 +450,8 @@
     gap: 40px;
   }
 
-  .landing-right {
-    padding-top: 0;
-  }
-
   .landing-footer {
-    padding: 20px 20px 40px;
+    padding: 20px 20px 16px;
   }
 
   .header-langs {
@@ -454,11 +463,17 @@
     padding: 4px 8px;
     font-size: 0.72rem;
   }
+
+  .auth-pill {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .landing-logo,
   .landing-tagline,
+  .landing-inner,
   .el-in {
     transition: none;
     animation: none;

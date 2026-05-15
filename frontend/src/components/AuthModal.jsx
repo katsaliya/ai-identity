@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./AuthModal.css";
 
-export default function AuthModal({ onClose, onAuth }) {
-  const [tab, setTab] = useState("login"); // "login" | "signup"
+export default function AuthModal({ onClose, onAuth, initialTab = "login" }) {
+  const [tab, setTab] = useState(initialTab);
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
 

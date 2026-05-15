@@ -78,5 +78,10 @@ export function useMicrophone(language) {
     setIsRecording(false);
   }
 
-  return { isRecording, transcript, interimTranscript, error, start, stop };
+  function clearTranscript() {
+    setTranscript("");
+    setInterimTranscript("");
+  }
+
+  return { isRecording, transcript, interimTranscript, error, start, stop, clearTranscript };
 }

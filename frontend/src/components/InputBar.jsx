@@ -1,38 +1,29 @@
-// InputBar — the message input area.
-// When centered=true (empty state): sits inline below the prompt, not fixed to the bottom.
-// When centered=false (chatting): fixed to the bottom of the screen.
-// onSend: called with the message string when the user submits
-// onMicToggle: called when the mic button is tapped
-// isRecording: true while the mic is active (changes mic button appearance)
-// transcript: text returned from Whisper — auto-fills the input when it arrives
-// t: translation function for placeholder text
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./InputBar.css";
 
 export default function InputBar({ onSend, onMicToggle, isRecording, transcript, interimTranscript, t, centered }) {
   const [text, setText] = useState("");
-  const [lastTranscript, setLastTranscript] = useState("");
+  const lastTranscriptRef = useRef("");
 
-  // Show words live in the input as the user speaks
   useEffect(() => {
     if (isRecording) setText(interimTranscript || "");
   }, [interimTranscript, isRecording]);
 
-  // When Whisper returns the final transcript, replace the interim text
-  if (transcript && transcript !== lastTranscript) {
-    setLastTranscript(transcript);
-    setText(transcript);
-  }
+  useEffect(() => {
+    if (transcript && transcript !== lastTranscriptRef.current) {
+      lastTranscriptRef.current = transcript;
+      setText(transcript);
+    }
+  }, [transcript]);
 
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed) return;
     onSend(trimmed);
     setText("");
+    lastTranscriptRef.current = "";
   }
 
-  // Allow sending with the Enter key (Shift+Enter adds a new line)
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -41,9 +32,7 @@ export default function InputBar({ onSend, onMicToggle, isRecording, transcript,
   }
 
   return (
-    // centered class removes fixed positioning so the bar flows with the empty state layout
     <div className={`input-bar ${centered ? "centered" : ""}`}>
-      {/* Text input — grows with content up to a max height */}
       <textarea
         className="input-field"
         value={text}
@@ -53,7 +42,6 @@ export default function InputBar({ onSend, onMicToggle, isRecording, transcript,
         rows={1}
       />
 
-      {/* Mic button — turns active/filled while recording */}
       <button
         className={`input-btn mic-btn ${isRecording ? "recording" : ""}`}
         onClick={onMicToggle}
@@ -62,7 +50,6 @@ export default function InputBar({ onSend, onMicToggle, isRecording, transcript,
         🎙️
       </button>
 
-      {/* Send button — disabled when input is empty */}
       <button
         className="input-btn send-btn"
         onClick={handleSend}

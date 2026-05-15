@@ -28,7 +28,7 @@
 
 /* The bubble itself */
 .bubble {
-  max-width: 75%;
+  max-width: min(75%, 680px);
   padding: 10px 14px;
   border-radius: 18px;
   font-size: 0.95rem;

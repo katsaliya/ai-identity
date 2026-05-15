@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { LANGUAGES } from "../i18n";
 import "./LandingPage.css";
 
 const LANG_ABBR = { en: "EN", es: "ES", zh: "中文", tl: "TL", hi: "हि", ar: "عر" };
 
-// Animation-phase taglines — cycle en→es→zh→tl→hi→ar then settle on the selected language
 const TAGLINES = [
   "Navigate your immigration journey — in your language.",
   "Navega tu camino migratorio — en tu idioma.",
@@ -14,15 +13,14 @@ const TAGLINES = [
   "تنقّل في رحلتك الهجرية — بلغتك.",
 ];
 
-// Full landing-page copy in each language — instant switch on pill click
 const CONTENT = {
   en: {
-    tagline:      "Navigate your immigration journey — in your language.",
-    placeholder:  "Ask about your immigration form...",
-    ctaSecondary: "Create a free account",
-    ctaNote:      "Free accounts let you save conversations and access your document history anytime",
-    formsLabel:   "Supported USCIS Forms",
-    whatLabel:    "WHAT YOU CAN DO",
+    tagline:    "Navigate your immigration journey — in your language.",
+    placeholder: "Ask about your immigration form...",
+    formsLabel: "Supported USCIS Forms",
+    whatLabel:  "WHAT YOU CAN DO",
+    loginLabel: "Log In",
+    signupLabel: "Sign Up",
     features: [
       { title: "Form Walkthroughs",       desc: "Field-by-field guidance for I-485, I-765, I-821D and more — with common mistakes flagged." },
       { title: "Personalized Checklists", desc: "Answer a few questions and get a checklist of forms, documents, fees, and deadlines for your case." },
@@ -35,16 +33,15 @@ const CONTENT = {
     ],
   },
   es: {
-    tagline:      "Navega tu camino migratorio — en tu idioma.",
-    body:         "Sube un documento, haz una pregunta o recorre un formulario paso a paso. AI Identity explica el proceso de inmigración en lenguaje sencillo — gratis, ahora mismo, sin cita previa.",
-    placeholder:  "Pregunta sobre tu formulario de inmigración...",
-    ctaSecondary: "Crear una cuenta gratuita",
-    ctaNote:      "Las cuentas gratuitas te permiten guardar conversaciones y acceder al historial en cualquier momento",
-    formsLabel:   "Formularios USCIS compatibles",
-    whatLabel:    "LO QUE PUEDES HACER",
+    tagline:    "Navega tu camino migratorio — en tu idioma.",
+    placeholder: "Pregunta sobre tu formulario de inmigración...",
+    formsLabel: "Formularios USCIS compatibles",
+    whatLabel:  "LO QUE PUEDES HACER",
+    loginLabel: "Iniciar sesión",
+    signupLabel: "Registrarse",
     features: [
-      { title: "Guías de formularios",   desc: "Orientación campo por campo para I-485, I-765, I-821D y más — con errores comunes señalados." },
-      { title: "Listas personalizadas",  desc: "Responde algunas preguntas y obtén una lista de formularios, documentos, tarifas y plazos para tu caso." },
+      { title: "Guías de formularios",    desc: "Orientación campo por campo para I-485, I-765, I-821D y más — con errores comunes señalados." },
+      { title: "Listas personalizadas",   desc: "Responde algunas preguntas y obtén una lista de formularios, documentos, tarifas y plazos para tu caso." },
       { title: "Recursos de ayuda legal", desc: "Ajustado a tu idioma y tipo de caso — organizaciones de ayuda legal gratuita verificadas cerca de ti." },
     ],
     bullets: [
@@ -54,13 +51,12 @@ const CONTENT = {
     ],
   },
   zh: {
-    tagline:      "用您的语言 — 开启移民之旅。",
-    body:         "上传文件、提问，或逐步完成表格。AI Identity 用通俗语言解释美国移民流程——免费、即刻、无需预约。",
-    placeholder:  "询问您的移民表格...",
-    ctaSecondary: "创建免费账户",
-    ctaNote:      "免费账户可保存对话，随时访问文件记录",
-    formsLabel:   "支持的 USCIS 表格",
-    whatLabel:    "您可以做什么",
+    tagline:    "用您的语言 — 开启移民之旅。",
+    placeholder: "询问您的移民表格...",
+    formsLabel: "支持的 USCIS 表格",
+    whatLabel:  "您可以做什么",
+    loginLabel: "登录",
+    signupLabel: "注册",
     features: [
       { title: "表格指导",     desc: "逐项填写 I-485、I-765、I-821D 等表格的指导——并标注常见错误。" },
       { title: "个性化清单",   desc: "回答几个问题，获取适合您案例的表格、文件、费用和截止日期清单。" },
@@ -73,16 +69,15 @@ const CONTENT = {
     ],
   },
   tl: {
-    tagline:      "I-navigate ang iyong immigration journey — sa iyong wika.",
-    body:         "Mag-upload ng dokumento, magtanong, o lakarin ang isang form hakbang-hakbang. Ipinaliwanag ng AI Identity ang proseso ng imigrasyon sa simpleng wika — libre, ngayon na, walang appointment.",
-    placeholder:  "Magtanong tungkol sa iyong immigration form...",
-    ctaSecondary: "Gumawa ng libreng account",
-    ctaNote:      "Ang mga libreng account ay nagpapahintulot sa iyo na i-save ang mga pag-uusap at i-access ang kasaysayan anumang oras",
-    formsLabel:   "Mga Sinusuportahang USCIS Form",
-    whatLabel:    "ANO ANG MAGAGAWA MO",
+    tagline:    "I-navigate ang iyong immigration journey — sa iyong wika.",
+    placeholder: "Magtanong tungkol sa iyong immigration form...",
+    formsLabel: "Mga Sinusuportahang USCIS Form",
+    whatLabel:  "ANO ANG MAGAGAWA MO",
+    loginLabel: "Mag-login",
+    signupLabel: "Mag-sign up",
     features: [
-      { title: "Mga Gabay sa Form",          desc: "Gabay sa bawat field para sa I-485, I-765, I-821D at iba pa — na may mga karaniwang pagkakamaling minarkahan." },
-      { title: "Personalized na Checklist",  desc: "Sagutin ang ilang tanong at makakuha ng checklist ng mga form, dokumento, bayad, at deadline para sa iyong kaso." },
+      { title: "Mga Gabay sa Form",             desc: "Gabay sa bawat field para sa I-485, I-765, I-821D at iba pa — na may mga karaniwang pagkakamaling minarkahan." },
+      { title: "Personalized na Checklist",     desc: "Sagutin ang ilang tanong at makakuha ng checklist ng mga form, dokumento, bayad, at deadline para sa iyong kaso." },
       { title: "Mga Legal Aid na Mapagkukunan", desc: "Nakaakma sa iyong wika at uri ng kaso — mga na-verify na libreng legal aid org malapit sa iyo." },
     ],
     bullets: [
@@ -92,13 +87,12 @@ const CONTENT = {
     ],
   },
   hi: {
-    tagline:      "अपनी भाषा में — इमिग्रेशन यात्रा नेविगेट करें।",
-    body:         "एक दस्तावेज़ अपलोड करें, प्रश्न पूछें, या चरण दर चरण फ़ॉर्म भरें। AI Identity अमेरिकी इमिग्रेशन प्रक्रिया को सरल भाषा में समझाता है — मुफ़्त, अभी, बिना किसी अपॉइंटमेंट के।",
-    placeholder:  "अपने इमिग्रेशन फ़ॉर्म के बारे में पूछें...",
-    ctaSecondary: "मुफ़्त खाता बनाएं",
-    ctaNote:      "मुफ़्त खाते आपको बातचीत सहेजने और किसी भी समय दस्तावेज़ इतिहास देखने की सुविधा देते हैं",
-    formsLabel:   "समर्थित USCIS फ़ॉर्म",
-    whatLabel:    "आप क्या कर सकते हैं",
+    tagline:    "अपनी भाषा में — इमिग्रेशन यात्रा नेविगेट करें।",
+    placeholder: "अपने इमिग्रेशन फ़ॉर्म के बारे में पूछें...",
+    formsLabel: "समर्थित USCIS फ़ॉर्म",
+    whatLabel:  "आप क्या कर सकते हैं",
+    loginLabel: "लॉग इन",
+    signupLabel: "साइन अप",
     features: [
       { title: "फ़ॉर्म गाइड",        desc: "I-485, I-765, I-821D और अन्य के लिए क्षेत्र-दर-क्षेत्र मार्गदर्शन — सामान्य गलतियों के साथ।" },
       { title: "व्यक्तिगत चेकलिस्ट", desc: "कुछ प्रश्नों के उत्तर दें और अपने मामले के लिए फ़ॉर्म, दस्तावेज़, शुल्क और समयसीमा की सूची प्राप्त करें।" },
@@ -111,13 +105,12 @@ const CONTENT = {
     ],
   },
   ar: {
-    tagline:      "تنقّل في رحلتك الهجرية — بلغتك.",
-    body:         "قم بتحميل وثيقة، أو اطرح سؤالاً، أو أكمل نموذجاً خطوة بخطوة. يشرح AI Identity عملية الهجرة الأمريكية بلغة بسيطة — مجاناً، الآن، دون حاجة لموعد.",
-    placeholder:  "اسأل عن نموذج الهجرة الخاص بك...",
-    ctaSecondary: "إنشاء حساب مجاني",
-    ctaNote:      "تتيح لك الحسابات المجانية حفظ المحادثات والوصول إلى سجل مستنداتك في أي وقت",
-    formsLabel:   "نماذج USCIS المدعومة",
-    whatLabel:    "ما يمكنك فعله",
+    tagline:    "تنقّل في رحلتك الهجرية — بلغتك.",
+    placeholder: "اسأل عن نموذج الهجرة الخاص بك...",
+    formsLabel: "نماذج USCIS المدعومة",
+    whatLabel:  "ما يمكنك فعله",
+    loginLabel: "تسجيل الدخول",
+    signupLabel: "إنشاء حساب",
     features: [
       { title: "إرشادات النماذج",          desc: "إرشادات حقل بحقل للنماذج I-485 وI-765 وI-821D وغيرها — مع تحديد الأخطاء الشائعة." },
       { title: "قوائم مخصصة",             desc: "أجب على بعض الأسئلة واحصل على قائمة بالنماذج والوثائق والرسوم والمواعيد النهائية لقضيتك." },
@@ -160,7 +153,6 @@ const FORM_PILLS = [
   { label: "More coming soon", dim: true },
 ];
 
-// Split tagline at "—" → part after dash gets gold italic styling
 function SplitTagline({ text }) {
   const idx = text.indexOf("—");
   if (idx === -1) return <>{text}</>;
@@ -178,16 +170,18 @@ const LANG_COUNT = TAGLINES.length;
 const CONTENT_AT = LOGO_IN + LANG_COUNT * PER_LANG;
 
 export default function LandingPage({
-  onStartChat, onCreateAccount,
+  onStartChat, onLogin, onSignup,
   language, onLanguageChange,
   isRecording, transcript, interimTranscript, onMicToggle,
 }) {
-  const [logoIn,         setLogoIn]         = useState(false);
-  const [subtitleShown,  setSubtitleShown]  = useState(false);
-  const [taglineIdx,     setTaglineIdx]     = useState(0);
-  const [contentIn,      setContentIn]      = useState(false);
-  const [inputText,      setInputText]      = useState("");
-  const [lastTranscript, setLastTranscript] = useState("");
+  const [logoIn,        setLogoIn]        = useState(false);
+  const [subtitleShown, setSubtitleShown] = useState(false);
+  const [taglineIdx,    setTaglineIdx]    = useState(0);
+  const [contentIn,     setContentIn]     = useState(false);
+  const [inputText,     setInputText]     = useState("");
+  const [langFading,    setLangFading]    = useState(false);
+  const [displayLang,   setDisplayLang]   = useState(language);
+  const lastTranscriptRef = useRef("");
 
   // Intro sequence
   useEffect(() => {
@@ -206,15 +200,34 @@ export default function LandingPage({
     if (isRecording) setInputText(interimTranscript || "");
   }, [interimTranscript, isRecording]);
 
-  // Final Whisper transcript
-  if (transcript && transcript !== lastTranscript) {
-    setLastTranscript(transcript);
-    setInputText(transcript);
+  // Final Whisper transcript fills input
+  useEffect(() => {
+    if (transcript && transcript !== lastTranscriptRef.current) {
+      lastTranscriptRef.current = transcript;
+      setInputText(transcript);
+    }
+  }, [transcript]);
+
+  // Language switch with fade animation
+  function handleLanguageSwitch(code) {
+    if (code === displayLang || !contentIn) {
+      onLanguageChange(code);
+      setDisplayLang(code);
+      return;
+    }
+    setLangFading(true);
+    onLanguageChange(code);
+    setTimeout(() => {
+      setDisplayLang(code);
+      setLangFading(false);
+    }, 180);
   }
 
   function handleSubmit() {
     const msg = inputText.trim();
     if (!msg) return;
+    setInputText("");
+    lastTranscriptRef.current = "";
     onStartChat(msg);
   }
 
@@ -225,28 +238,36 @@ export default function LandingPage({
     }
   }
 
-  const c = CONTENT[language] ?? CONTENT.en;
+  const c = CONTENT[displayLang] ?? CONTENT.en;
 
   return (
     <div className="landing">
 
-      {/* ── Language switcher header ──────────────────────────────── */}
+      {/* ── Header: language pills + auth buttons ──────────────────── */}
       <div className={`landing-header ${contentIn ? "el-in" : ""}`} style={{ "--d": "0ms" }}>
         <div className="header-langs">
           {LANGUAGES.map((l) => (
             <button
               key={l.code}
-              className={`header-lang-btn ${language === l.code ? "header-lang-btn--active" : ""}`}
-              onClick={() => onLanguageChange(l.code)}
+              className={`header-lang-btn ${displayLang === l.code ? "header-lang-btn--active" : ""}`}
+              onClick={() => handleLanguageSwitch(l.code)}
             >
               {LANG_ABBR[l.code]}
             </button>
           ))}
         </div>
+        <div className="header-auth">
+          <button className="auth-pill auth-pill--login" onClick={onLogin}>
+            {c.loginLabel}
+          </button>
+          <button className="auth-pill auth-pill--signup" onClick={onSignup}>
+            {c.signupLabel}
+          </button>
+        </div>
       </div>
 
       {/* ── Two-column body ──────────────────────────────────────── */}
-      <div className="landing-inner">
+      <div className={`landing-inner${langFading ? " lang-fading" : ""}`}>
         <div className="landing-left">
 
           {/* Badge */}
@@ -255,10 +276,10 @@ export default function LandingPage({
             FREE · NO ACCOUNT REQUIRED · BAY AREA &amp; BEYOND
           </div>
 
-          {/* Logo — fades in first */}
+          {/* Logo */}
           <h1 className={`landing-logo ${logoIn ? "landing-logo--in" : ""}`}>AIdentity</h1>
 
-          {/* Cycling tagline — no dir attr so Arabic aligns left like every other language */}
+          {/* Cycling tagline */}
           <p
             key={taglineIdx}
             className={`landing-tagline ${subtitleShown ? "landing-tagline--shown" : ""}`}
@@ -266,13 +287,8 @@ export default function LandingPage({
             {contentIn ? <SplitTagline text={c.tagline} /> : TAGLINES[taglineIdx]}
           </p>
 
-          {/* Body copy */}
-          <p className={`landing-body ${contentIn ? "el-in" : ""}`} style={{ "--d": "80ms" }}>
-            {c.body}
-          </p>
-
-          {/* Input bar — replaces the old "Start chatting" button */}
-          <div className={`landing-input-wrap ${contentIn ? "el-in" : ""}`} style={{ "--d": "160ms" }}>
+          {/* Input bar */}
+          <div className={`landing-input-wrap ${contentIn ? "el-in" : ""}`} style={{ "--d": "120ms" }}>
             <textarea
               className="landing-input"
               value={inputText}
@@ -298,27 +314,10 @@ export default function LandingPage({
             </button>
           </div>
 
-          {/* Secondary CTA + note */}
-          <div className={`landing-secondary-row ${contentIn ? "el-in" : ""}`} style={{ "--d": "240ms" }}>
-            <button className="cta-secondary" onClick={onCreateAccount}>
-              {c.ctaSecondary}
-            </button>
-            <p className="cta-note">{c.ctaNote}</p>
-          </div>
-
-          {/* Form pills */}
-          <div className={`forms-section ${contentIn ? "el-in" : ""}`} style={{ "--d": "320ms" }}>
-            <span className="forms-label">{c.formsLabel}</span>
-            <div className="form-pills">
-              {FORM_PILLS.map(({ label, dim }) => (
-                <span key={label} className={`form-pill${dim ? " form-pill--dim" : ""}`}>{label}</span>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Right column */}
-        <div className={`landing-right ${contentIn ? "el-in" : ""}`} style={{ "--d": "400ms" }}>
+        <div className={`landing-right ${contentIn ? "el-in" : ""}`} style={{ "--d": "300ms" }}>
           <p className="what-label">{c.whatLabel}</p>
           <div className="feature-cards">
             {c.features.map((f, i) => (
@@ -331,11 +330,21 @@ export default function LandingPage({
               </div>
             ))}
           </div>
+
+          {/* Form pills — below feature cards */}
+          <div className="forms-section">
+            <span className="forms-label">{c.formsLabel}</span>
+            <div className="form-pills">
+              {FORM_PILLS.map(({ label, dim }) => (
+                <span key={label} className={`form-pill${dim ? " form-pill--dim" : ""}`}>{label}</span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* ── Footer ───────────────────────────────────────────────── */}
-      <footer className={`landing-footer ${contentIn ? "el-in" : ""}`} style={{ "--d": "480ms" }}>
+      <footer className={`landing-footer ${contentIn ? "el-in" : ""}`} style={{ "--d": "400ms" }}>
         <div className="footer-bullets">
           {c.bullets.map((text) => (
             <div key={text} className="footer-bullet">
@@ -344,7 +353,7 @@ export default function LandingPage({
           ))}
         </div>
         <p className="landing-disclaimer">
-          AI Identity is not a law firm and does not provide legal advice. This tool is designed
+          *AIdentity is not a law firm and does not provide legal advice. This tool is designed
           to help you understand immigration documents and forms — always consult a licensed
           immigration attorney for decisions that affect your case.
         </p>
